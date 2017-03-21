@@ -52,7 +52,7 @@ npm run dist
 ## ConvergenceDomUtils.DomBinder
 **`constructor(element: HTMLElement, data: RealTimeObject | RealTimeModel, autoBind: boolean = true)`**
 
-Creates a new DomBinder and binds the element to the RealTimeObject. If an instance of RealTimeModel is passed in, the HTMLElemenet will be bound to the root element of the model. The current contents of the element will be replaced by the DOM representation contained in the RealTimeObject. The autoBind parameter configures whether or not the DomBinder will automatically bind upon construction. The default is true.
+Creates a new DomBinder associated with a specific HTMLElement and RealTimeObject. If an instance of RealTimeModel is passed in, the HTMLElemenet will be bound to the root element of the model. The current contents of the element will be replaced by the DOM representation contained in the RealTimeObject. The autoBind parameter configures whether or not the DomBinder will automatically bind upon construction. The default is true.
 
 **`unbind(): void`**
 
