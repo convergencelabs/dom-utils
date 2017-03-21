@@ -68,12 +68,15 @@ Determines if the HTMLElement and RealTimeObject are currently bound.
 
 ## ConvergenceDomUtils.DomConverter
 **`static htmlToJson(html: string): any`**
+
 Converts a string continaing HTML into the JSON representation of the DOM Tree.
 
 **`static nodeToJson(node: Node): any`**
+
 Converts a DOM Node (e.g. Element, Text) into the JSON representation of the DOM Tree.
 
 **`static jsonToNode(json: any): Node`**
+
 Converts the JSON Representation of a DOM Tree into a DOM Node.
     
 
