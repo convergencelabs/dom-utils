@@ -43,8 +43,17 @@ gulp.task('dist', ['build', 'copy-files'], function () {
 });
 
 gulp.task('copy-files', ['build'], function () {
-  return gulp.src(["build/**/*", "README.md", "LICENSE.txt", 'package.json'])
+  const mainCopy = gulp.src(["build/**/*", '!build/browser/*.js', "README.md", "LICENSE.txt", 'package.json'])
     .pipe(gulp.dest(distDir));
+
+  const packageJson = JSON.parse(fs.readFileSync("./package.json"));
+  const headerTxt = fs.readFileSync("./copyright-header.txt");
+
+  const jsCopy = gulp.src(['build/browser/*.js'])
+    .pipe(header(headerTxt, {package: packageJson}))
+    .pipe(gulp.dest(distDir + "/browser"));
+
+  return merge([mainCopy, jsCopy]);
 });
 
 
@@ -64,9 +73,6 @@ gulp.task('typescript-cjs', function () {
 
 gulp.task('webpack-umd', function () {
   const outputPath = `${buildDir}/browser`;
-
-  const packageJson = JSON.parse(fs.readFileSync("./package.json"));
-  const headerTxt = fs.readFileSync("./copyright-header.txt");
 
   return gulp.src('src/ts/index.ts')
     .pipe(webpackStream({
@@ -92,8 +98,6 @@ gulp.task('webpack-umd', function () {
         "@convergence/convergence": "Convergence"
       }
     }, webpack2))
-    .pipe(header(headerTxt, {package: packageJson}))
-    //.pipe(rename({ basename: filename }))
     .pipe(gulp.dest(outputPath));
 });
 
