@@ -7,6 +7,6 @@ Convergence.connectAnonymously(DOMAIN_URL).then(function (domain) {
     );
   });
 }).then(function (model) {
-  const binder = new ConvergenceDomUtils.DomBinder(editable, model);
+  const binder = new ConvergenceDomUtils.DomBinder(editable, model.root());
   editable.contentEditable = true;
 });
