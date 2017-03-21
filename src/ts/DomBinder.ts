@@ -1,10 +1,11 @@
-import {RealTimeArray, RealTimeObject, RealTimeString} from "@convergence/convergence";
+import {RealTimeArray, RealTimeObject, RealTimeString, RealTimeModel} from "@convergence/convergence";
 import {DomConverter} from "./DomConverter";
 import * as MutationSummary from "mutation-summary";
 
 const CHILD_NODES: string = "childNodes";
 const NODE_VALUE: string = "nodeValue";
 const ATTRIBUTES: string = "attributes";
+const NODE_TYPE: string = "nodeType";
 
 /**
  * Binds a convergence RealTimeObject to a DOM Node. The content of the element
@@ -13,17 +14,21 @@ const ATTRIBUTES: string = "attributes";
 export class DomBinder {
   private _observer: MutationSummary;
   private _object: RealTimeObject;
+  private _element: HTMLElement;
+  private _bound: boolean;
 
-  constructor(element: HTMLElement, object: RealTimeObject) {
+  constructor(element: HTMLElement, object: RealTimeObject | RealTimeModel, autoBind: boolean = true) {
     if (!element) {
       throw new Error("The 'element' parameter must be an instance of HTMLElement.");
     }
 
-    if (!(object instanceof RealTimeObject)) {
+    if (object instanceof RealTimeModel) {
+      object = object.root();
+    } else if (!(object instanceof RealTimeObject)) {
+      // we don't need to check this if we just got the object from a model.
       throw new Error("The 'object' parameter must be an instance of RealTimeObject.");
-    }
-
-    if (object.isDetached()) {
+    } else if (object.isDetached()) {
+      // we don't need to check this either if we just got the object from a model.
       throw new Error("Can not bind to a detached RealTimeObject.")
     }
 
@@ -32,29 +37,51 @@ export class DomBinder {
     }
 
     this._object = object;
+    this._element = element;
 
-    // Clear the node
-    while (element.firstChild) {
-      element.removeChild(element.firstChild);
+    if (autoBind) {
+      this.bind();
+    }
+  }
+
+  public bind(): void {
+    if (this._bound) {
+      throw new Error("Can not call bind() when the DomBinder is already bound.");
     }
 
-    const value: any[] = object.elementAt(CHILD_NODES).value();
+    // Clear the node
+    while (this._element.firstChild) {
+      this._element.removeChild(this._element.firstChild);
+    }
+
+    const value: any[] = this._object.elementAt(CHILD_NODES).value();
     value.forEach(child => {
-      element.appendChild(DomConverter.jsonToNode(child));
+      this._element.appendChild(DomConverter.jsonToNode(child));
     });
 
-    this._bind(element, object);
+    this._bind(this._element, this._object);
 
     this._observer = new MutationSummary({
-      rootNode: element,
+      rootNode: this._element,
       callback: this._handleChange.bind(this),
       queries: [{all: true}]
     });
+
+    this._bound = true;
+  }
+
+  public isBound(): boolean {
+    return this._bound;
   }
 
   public unbind(): void {
+    if (!this._bound) {
+      throw new Error("Can not call unbind() when the DomBinder is not bound.");
+    }
+
     this._observer.disconnect();
-    // todo unbind all model callbacks.
+    this._unbind(this._object);
+    this._bound = false;
   }
 
   private _handleChange(changes) {
@@ -184,6 +211,39 @@ export class DomBinder {
       this._observer.disconnect();
       textNode.nodeValue = e.element.value();
       this._observer.reconnect();
+    });
+  }
+
+  private _unbind(realTimeElement) {
+    const nodeType = realTimeElement.get(NODE_TYPE).value();
+    switch (nodeType) {
+      case 1:
+        this._unbindElement(realTimeElement);
+        break;
+      case 3:
+        this._unbindTextNode(realTimeElement);
+        break;
+    }
+  };
+
+  private _unbindTextNode(realTimeElement) {
+    const nodeValue = realTimeElement.get(NODE_VALUE);
+    // TODO later we should probably only remove listeners we add. We could put the listener
+    // in some sort of map, by id later on.
+    nodeValue.removeAllListenersForAllEvents();
+  }
+
+  private _unbindElement(realTimeElement) {
+    // TODO later we should probably only remove listeners we add. We could put the listener
+    // in some sort of map, by id later on.
+    const attributes = realTimeElement.get(ATTRIBUTES);
+    const childNodes = realTimeElement.get(CHILD_NODES);
+
+    childNodes.removeAllListenersForAllEvents();
+    attributes.removeAllListenersForAllEvents();
+
+    childNodes.forEach((childNode, index) => {
+      this._unbind(childNode);
     });
   }
 }
