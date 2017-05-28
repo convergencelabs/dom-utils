@@ -1,6 +1,8 @@
 import {RealTimeArray, RealTimeObject, RealTimeString, RealTimeModel} from "@convergence/convergence";
 import {DomConverter} from "./DomConverter";
+import StringChangeDetector = require("@convergence/string-change-detector");
 import * as MutationSummary from "mutation-summary";
+import {SelectionUtils} from "./SelectionUtils";
 
 const CHILD_NODES: string = "childNodes";
 const NODE_VALUE: string = "nodeValue";
@@ -89,7 +91,7 @@ export class DomBinder {
       this._object.model().startBatch();
 
       summary.characterDataChanged.forEach(textNode => {
-        textNode.__convergence_model.get(NODE_VALUE).value(textNode.nodeValue);
+        textNode.__scd.processNewValue(textNode.nodeValue);
       });
 
       const removeNodes = summary.removed.slice(0);
@@ -145,7 +147,7 @@ export class DomBinder {
     });
 
     if (this._object.model().batchSize() > 0) {
-      this._object.model().endBatch();
+      this._object.model().completeBatch();
     } else {
       this._object.model().cancelBatch();
     }
@@ -168,19 +170,36 @@ export class DomBinder {
     const childNodes = realTimeElement.get(CHILD_NODES);
 
     childNodes.on(RealTimeArray.Events.INSERT, e => {
-      this._observer.disconnect();
       const beforeNode = element.childNodes.item(e.index);
       const newChild = DomConverter.jsonToNode(e.value.value());
+
+      const originalSelection = SelectionUtils.getSelection(this._element);
+
+      this._observer.disconnect();
       element.insertBefore(newChild, beforeNode);
       this._bind(newChild, e.value);
       this._observer.reconnect();
+
+      if (originalSelection) {
+        const insertedRange = SelectionUtils.getRelativeNodeRange(newChild, this._element);
+        const transformed = SelectionUtils.transformSelectionOnInsert(originalSelection, insertedRange);
+        SelectionUtils.setSelection(transformed, this._element);
+      }
     });
 
     childNodes.on(RealTimeArray.Events.REMOVE, e => {
-      this._observer.disconnect();
+      const originalSelection = SelectionUtils.getSelection(this._element);
       const removed = element.childNodes.item(e.index);
+      const removedRange = SelectionUtils.getRelativeNodeRange(removed, this._element);
+
+      this._observer.disconnect();
       element.removeChild(removed);
       this._observer.reconnect();
+
+      if (originalSelection) {
+        const transformed = SelectionUtils.transformSelectionOnRemove(originalSelection, removedRange);
+        SelectionUtils.setSelection(transformed, this._element);
+      }
     });
 
     attributes.on(RealTimeObject.Events.SET, e => {
@@ -207,11 +226,57 @@ export class DomBinder {
 
   private _bindTextNode(textNode, realTimeElement) {
     const nodeValue = realTimeElement.get(NODE_VALUE);
-    nodeValue.on(RealTimeString.Events.VALUE, e => {
-      this._observer.disconnect();
-      textNode.nodeValue = e.element.value();
-      this._observer.reconnect();
+
+    const scd = new StringChangeDetector({
+      value: nodeValue.value(),
+      onInsert: (index, value) => {
+        nodeValue.insert(index, value)
+      },
+      onRemove: (index, length) => {
+        nodeValue.remove(index, length)
+      }
     });
+
+    textNode.__scd = scd;
+
+    const onRemoteInsert = event => {
+      if (!event.local) {
+        const originalSelection = SelectionUtils.getSelection(this._element);
+        scd.insertText(event.index, event.value);
+
+        this._observer.disconnect();
+        textNode.nodeValue = scd.getValue();
+        this._observer.reconnect();
+
+        if (originalSelection) {
+          const nodeRange = SelectionUtils.getRelativeNodeRange(textNode, this._element);
+          const offset = nodeRange.start;
+          const insertedRange = {start: offset+ event.index, end: offset + event.index + event.value.length};
+          const transformed = SelectionUtils.transformSelectionOnInsert(originalSelection, insertedRange);
+          SelectionUtils.setSelection(transformed, this._element);
+        }
+      }
+    };
+    nodeValue.on(RealTimeString.Events.INSERT, onRemoteInsert);
+
+    const onRemoteRemove = event => {
+      if (!event.local) {
+        const originalSelection = SelectionUtils.getSelection(this._element);
+        scd.removeText(event.index, event.value.length);
+        this._observer.disconnect();
+        textNode.nodeValue = scd.getValue();
+        this._observer.reconnect();
+
+        if (originalSelection) {
+          const nodeRange = SelectionUtils.getRelativeNodeRange(textNode, this._element);
+          const offset = nodeRange.start;
+          const removedRange = {start: offset + event.index, end: offset + event.index + event.value.length};
+          const transformed = SelectionUtils.transformSelectionOnRemove(originalSelection, removedRange);
+          SelectionUtils.setSelection(transformed, this._element);
+        }
+      }
+    };
+    nodeValue.on(RealTimeString.Events.REMOVE, onRemoteRemove);
   }
 
   private _unbind(realTimeElement) {

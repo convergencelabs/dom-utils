@@ -31,7 +31,8 @@
     "clean": "gulp clean"
   },
   "dependencies": {
-    "@convergence/convergence": "1.0.0-alpha.12"
+    "@convergence/convergence": "1.0.0-alpha.21",
+    "@convergence/string-change-detector": "0.1.7"
   },
   "devDependencies": {
     "@types/core-js": "0.9.35",
@@ -57,7 +58,7 @@
     "gulp-webpack": "1.5.0",
     "merge2": "1.0.3",
     "mutation-summary": "0.1.1",
-    "typescript": "2.1.6",
+    "typescript": "2.3.3",
     "webpack": "2.2.1",
     "webpack-stream": "3.2.0"
   }

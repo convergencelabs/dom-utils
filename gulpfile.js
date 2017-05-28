@@ -56,7 +56,6 @@ gulp.task('copy-files', ['build'], function () {
   return merge([mainCopy, jsCopy]);
 });
 
-
 gulp.task('typescript-cjs', function () {
   const tsResult =  gulp.src('src/ts/**/*.ts')
     .pipe(sourcemaps.init())
@@ -83,7 +82,7 @@ gulp.task('webpack-umd', function () {
         library: "ConvergenceDomUtils"
       },
       resolve: {
-        extensions: ['.ts']
+        extensions: ['.ts', '.js']
       },
       module: {
         rules: [
