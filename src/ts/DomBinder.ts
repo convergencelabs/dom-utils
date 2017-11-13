@@ -144,6 +144,23 @@ export class DomBinder {
           this._bind(add.node, rte);
         });
       });
+
+      Object.keys(summary.attributeChanged).forEach(attrName => {
+        const changedNodes = summary.attributeChanged[attrName];
+        changedNodes.forEach(node => {
+          if (node !== this._element) {
+            const model: RealTimeObject = node.__convergence_model;
+            const newVal = node.getAttribute(attrName);
+            const attributes = model.get("attributes") as RealTimeObject;
+
+            if (newVal !== null && newVal != undefined) {
+              attributes.set(attrName, newVal);
+            } else {
+              attributes.remove(attrName);
+            }
+          }
+        });
+      })
     });
 
     if (this._object.model().batchSize() > 0) {
@@ -204,13 +221,13 @@ export class DomBinder {
 
     attributes.on(RealTimeObject.Events.SET, e => {
       this._observer.disconnect();
-      element.attributes.element.setAttribute(e.key, e.value.value());
+      element.setAttribute(e.key, e.value.value());
       this._observer.reconnect();
     });
 
     attributes.on(RealTimeObject.Events.REMOVE, e => {
       this._observer.disconnect();
-      element.attributes.element.removeAttribute(e.key);
+      element.removeAttribute(e.key);
       this._observer.reconnect();
     });
 
