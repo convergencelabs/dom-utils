@@ -31,7 +31,7 @@
     "clean": "gulp clean"
   },
   "dependencies": {
-    "@convergence/convergence": "1.0.0-alpha.21",
+    "@convergence/convergence": "^1.0.0-alpha.29",
     "@convergence/string-change-detector": "0.1.7"
   },
   "devDependencies": {
