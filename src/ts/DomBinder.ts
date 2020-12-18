@@ -24,9 +24,9 @@ export class DomBinder {
       throw new Error("The 'element' parameter must be an instance of HTMLElement.");
     }
 
-    if (object instanceof RealTimeModel) {
+    if ("root" in object) {
       object = object.root();
-    } else if (!(object instanceof RealTimeObject)) {
+    } else if (!("isDetached" in object)) {
       // we don't need to check this if we just got the object from a model.
       throw new Error("The 'object' parameter must be an instance of RealTimeObject.");
     } else if (object.isDetached()) {
