@@ -3,7 +3,7 @@
 </div>
 
 # Convergence DOM Utils
-[![Build Status](https://travis-ci.org/convergencelabs/dom-utils.svg?branch=master)](https://travis-ci.org/convergencelabs/dom-utils)
+![Build Status](https://github.com/convergencelabs/dom-utils/actions/workflows/main.yml/badge.svg)
 
 This project contains utilities to that make binding the DOM to a Convergence Model.
 
