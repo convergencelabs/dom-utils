@@ -10,13 +10,13 @@
   "module": "esm/index.js",
   "browser": "umd/convergence-dom-utils.js",
   "types": "types/index.d.ts",
-  "homepage": "http://convergencelabs.com",
+  "homepage": "https://convergencelabs.com",
   "bugs": "https://github.com/convergencelabs/dom-utils/issues",
   "license": "MIT",
   "author": {
     "name": "Convergence Labs, Inc.",
     "email": "info@convergencelabs.com",
-    "url": "http://convergencelabs.com"
+    "url": "https://convergencelabs.com"
   },
   "repository": {
     "type": "git",
