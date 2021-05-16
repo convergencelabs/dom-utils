@@ -1,25 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Content Editable Example</title>
-    <style>
-        .edit {
-            border: 1px solid black;
-            height: 400px;
-            width: 400px;
-            margin-top: 15px;
-        }
-    </style>
-    <script src="../node_modules/rxjs/bundles/rxjs.umd.js" language="JavaScript" charset="utf-8"></script>
-    <script src="../node_modules/@convergence/convergence/convergence.global.js" language="JavaScript" charset="utf-8"></script>
-    <script src="../dist/umd/convergence-dom-utils.js"></script>
-    <script src="config.js"></script>
+  <meta charset="UTF-8">
+  <title>Content Editable Example</title>
+
+  <!-- Materialize CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
+  <script src="//cdn.jsdelivr.net/npm/medium-editor@5.23.2/dist/js/medium-editor.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@5.23.2/dist/css/medium-editor.min.css"
+        type="text/css" media="screen" charset="utf-8">
+
+  <link rel="stylesheet" href="./style.css">
+
+  <script src="../node_modules/rxjs/bundles/rxjs.umd.js" language="JavaScript" charset="utf-8"></script>
+  <script src="../node_modules/@convergence/convergence/convergence.global.js" language="JavaScript"
+          charset="utf-8"></script>
+  <script src="../dist/umd/convergence-dom-utils.js"></script>
+  <script src="config.js"></script>
 </head>
 <body>
-<h3>Content Editable Rich Text Area</h3>
-<span>Use typical styling commands (CTRL+B, CTRL+I, etc.)</span>
-<div class="edit" id="editable">Loading...</div>
+<nav class="blue">
+  <div class="nav-wrapper">
+    <a href="https://convergence.io/"><img src="logo.png" class="logo" alt="logo"/></a>
+    <span class="title">Content Editable Rich Text Area</span>
+    <ul class="right hide-on-med-and-down">
+      <li>
+        <a href="https://github.com/convergencelabs/dom-utils/tree/master/example"
+           target="_blank"><i class="material-icons">code</i></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<div class="wrapper">
+  <div class="instructions">Select text to edit its style!</div>
+  <div class="row">
+    <div class="col s12 m7">
+      <div class="card">
+        <div class="edit editable" id="editable">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
 <script src="index.js"></script>
 </body>
 </html>

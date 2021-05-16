@@ -15,4 +15,4 @@
 //    domain you wish to use.
 //
 
-const DOMAIN_URL = "https://localhost:8000/api/realtime/domain/convergence/default";
+const DOMAIN_URL = "http://localhost:8000/api/realtime/convergence/default";
