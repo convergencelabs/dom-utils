@@ -24,8 +24,15 @@ export class SelectionUtils {
     };
   }
 
-  static getSelection(containerEl: HTMLElement): TextRange {
+  static getSelection(containerEl: HTMLElement): TextRange | undefined {
     const selection = window.getSelection();
+
+    // If the windows selection is not below this element
+    // then we don't have a seleciton.
+    if (!containerEl.contains(selection.anchorNode)) {
+      return;
+    }
+
     if (selection.rangeCount > 0) {
       const range = window.getSelection().getRangeAt(0);
       const preSelectionRange = range.cloneRange();
