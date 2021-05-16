@@ -12,7 +12,7 @@ This library depends on the following libraries:
 
 # Building the Distribution
 
-```
+```shell
 npm install
 npm run dist
 ```
@@ -31,7 +31,7 @@ npm run dist
 <div class="edit" id="editable">Loading...</div>
 <script>
   const editable = document.getElementById("editable"); 
-  const DOMAIN_URL = "https://api.convergence.io/realtime/domain/<username>/<domain-id>";
+  const DOMAIN_URL = "http://localhost:8000/api/realtime/convergence/default";
   Convergence.connectAnonymously(DOMAIN_URL).then(function (domain) {
     return domain.models().open("content-editable", "test", function () {
       return ConvergenceDomUtils.DomConverter.htmlToJson(
@@ -69,7 +69,7 @@ Determines if the HTMLElement and RealTimeObject are currently bound.
 ## ConvergenceDomUtils.DomConverter
 **`static htmlToJson(html: string): any`**
 
-Converts a string continaing HTML into the JSON representation of the DOM Tree.
+Converts a string containing HTML into the JSON representation of the DOM Tree.
 
 **`static nodeToJson(node: Node): any`**
 
@@ -88,4 +88,11 @@ To run the example you must first:
 3. Open the example/index.html file in your browser
 
 
-Note: to run the example you must have a Convergence Account.
+Note: to run the example you must have a running Convergence Server.  The easiest way to get one running is using Docker:
+
+```shell
+docker run \
+  --name convergence \
+  -p 8000:80 \
+  convergencelabs/convergence-omnibus
+```

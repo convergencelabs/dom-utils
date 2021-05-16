@@ -8,19 +8,29 @@ export class DomConverter {
 
   public static nodeToJson(node: Node): any {
     switch (node.nodeType) {
-      case 1:
+      case Node.ELEMENT_NODE:
         return DomConverter._elementToJson(node as HTMLElement);
-      case 3:
-        return DomConverter._textNodeToJson(node);
+      case Node.TEXT_NODE:
+        return DomConverter._textNodeToJson(node as Text);
+      case Node.COMMENT_NODE:
+        return DomConverter._commentToJson(node as Comment);
+      case Node.CDATA_SECTION_NODE:
+        return DomConverter._cdataToJson(node as CDATASection);
+      default:
+        throw new Error("unsupported node type: " + node.nodeType)
     }
   }
 
   public static jsonToNode(json: any): Node {
     switch (json.nodeType) {
-      case 1:
+      case Node.ELEMENT_NODE:
         return DomConverter._jsonToElement(json);
-      case 3:
+      case Node.TEXT_NODE:
         return DomConverter._jsonToTextNode(json);
+      case Node.COMMENT_NODE:
+        return DomConverter._jsonToComment(json);
+      case Node.CDATA_SECTION_NODE:
+        return DomConverter._jsonToCdata(json);
     }
   }
 
@@ -46,7 +56,21 @@ export class DomConverter {
     return json;
   }
 
-  private static _textNodeToJson(node: Node): any {
+  private static _cdataToJson(node: CDATASection): any {
+    return {
+      nodeType: node.nodeType,
+      nodeValue: node.nodeValue
+    };
+  }
+
+  private static _commentToJson(node: Comment): any {
+    return {
+      nodeType: node.nodeType,
+      nodeValue: node.nodeValue
+    };
+  }
+
+  private static _textNodeToJson(node: Text): any {
     return {
       nodeType: node.nodeType,
       nodeValue: node.nodeValue
@@ -67,7 +91,15 @@ export class DomConverter {
     return element;
   }
 
-  private static _jsonToTextNode(json) {
+  private static _jsonToTextNode(json): Text {
     return document.createTextNode(json.nodeValue);
+  }
+
+  private static _jsonToComment(json): Comment {
+    return document.createComment(json.nodeValue);
+  }
+
+  private static _jsonToCdata(json): CDATASection {
+    return document.createCDATASection(json.nodeValue);
   }
 }

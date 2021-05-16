@@ -1,7 +1,8 @@
 import {RealTimeArray, RealTimeObject, RealTimeString, RealTimeModel} from "@convergence/convergence";
 import {DomConverter} from "./DomConverter";
-import StringChangeDetector = require("@convergence/string-change-detector");
-import * as MutationSummary from "mutation-summary";
+import StringChangeDetector from "@convergence/string-change-detector";
+
+import {MutationSummary} from "mutation-summary";
 import {SelectionUtils} from "./SelectionUtils";
 
 const CHILD_NODES: string = "childNodes";
@@ -15,8 +16,8 @@ const NODE_TYPE: string = "nodeType";
  */
 export class DomBinder {
   private _observer: MutationSummary;
-  private _object: RealTimeObject;
-  private _element: HTMLElement;
+  private readonly _object: RealTimeObject;
+  private readonly _element: HTMLElement;
   private _bound: boolean;
 
   constructor(element: HTMLElement, object: RealTimeObject | RealTimeModel, autoBind: boolean = true) {
@@ -170,7 +171,7 @@ export class DomBinder {
     }
   }
 
-  private _bind = function (domNode, realTimeElement) {
+  private _bind = (domNode, realTimeElement) => {
     domNode.__convergence_model = realTimeElement;
     switch (domNode.nodeType) {
       case 1:
@@ -311,13 +312,13 @@ export class DomBinder {
   private _unbindTextNode(realTimeElement) {
     const nodeValue = realTimeElement.get(NODE_VALUE);
     // TODO later we should probably only remove listeners we add. We could put the listener
-    // in some sort of map, by id later on.
+    //  in some sort of map, by id later on.
     nodeValue.removeAllListenersForAllEvents();
   }
 
   private _unbindElement(realTimeElement) {
     // TODO later we should probably only remove listeners we add. We could put the listener
-    // in some sort of map, by id later on.
+    //  in some sort of map, by id later on.
     const attributes = realTimeElement.get(ATTRIBUTES);
     const childNodes = realTimeElement.get(CHILD_NODES);
 

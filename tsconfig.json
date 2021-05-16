@@ -1,20 +1,23 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
+    "rootDir": "./src",
+    "outDir": "dist/lib",
+    "allowJs": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "declaration": false,
+    "noImplicitAny": false,
     "preserveConstEnums": true,
+    "allowSyntheticDefaultImports": true,
     "sourceMap": true,
+    "inlineSources": true,
+    "esModuleInterop": true,
     "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "declaration": false
+    "downlevelIteration": true,
+    "skipLibCheck": true,
+    "stripInternal": true,
+    "removeComments": true,
+    "lib": ["es2015", "dom"]
   },
-  "include": [
-    "src/ts/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "build",
-    "dist",
-    "example"
-  ]
+  "include": ["src/**/*"]
 }

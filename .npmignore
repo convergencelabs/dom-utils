@@ -5,7 +5,6 @@ test
 tools
 .idea
 component.json
-gulpfile.js
 .npmignore
 .gitignore
 npm-debug.log

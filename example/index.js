@@ -6,7 +6,7 @@ Convergence.connectAnonymously(DOMAIN_URL).then(function (domain) {
     collection: "test",
     data: () => {
       return ConvergenceDomUtils.DomConverter.htmlToJson(
-        "Here is some initial text with a <b>bold</b> section and some <i>italics</i>."
+        `Here is some initial text with a <b>bold</b> section and some <i>italics</i>.`
       );
     }
   });
