@@ -1,3 +1,7 @@
+<div align="left">
+  <img  alt="Convergence Logo" height="80" src="https://convergence.io/assets/img/convergence-logo.png" >
+</div>
+
 # Convergence DOM Utils
 [![Build Status](https://travis-ci.org/convergencelabs/dom-utils.svg?branch=master)](https://travis-ci.org/convergencelabs/dom-utils)
 
